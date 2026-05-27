@@ -1,0 +1,1 @@
+# escala-de-estresse-percebido-PSS-10-
