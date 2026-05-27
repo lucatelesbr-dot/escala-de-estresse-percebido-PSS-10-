@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesquisa — Estresse Percebido em Alunos de Medicina</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --teal-dark: #0a4a3a;
+    --teal-mid: #0f6e56;
+    --teal-light: #1d9e75;
+    --teal-pale: #e1f5ee;
+    --teal-soft: #9fe1cb;
+    --text: #1a2e25;
+    --text-muted: #4a6358;
+    --text-light: #7a9988;
+    --border: #c5ddd4;
+    --bg: #f4faf7;
+    --white: #ffffff;
+    --error: #c0392b;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HERO */
+  .hero { background: var(--teal-dark); padding: 3rem 1.5rem 2.5rem; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content:''; position:absolute; top:-60px; right:-60px; width:220px; height:220px; border-radius:50%; border:40px solid rgba(255,255,255,0.04); }
+  .hero::after  { content:''; position:absolute; bottom:-80px; left:-40px; width:260px; height:260px; border-radius:50%; border:50px solid rgba(255,255,255,0.03); }
+  .hero-badge { display:inline-block; background:rgba(255,255,255,0.1); color:var(--teal-soft); font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; padding:5px 14px; border-radius:20px; margin-bottom:1.2rem; }
+  .hero h1 { font-family:'DM Serif Display',serif; font-size:clamp(1.4rem,4vw,2.1rem); color:#fff; line-height:1.25; max-width:620px; margin:0 auto 1rem; }
+  .hero p { color:rgba(255,255,255,.65); font-size:13.5px; max-width:500px; margin:0 auto; line-height:1.7; }
+  .hero-divider { width:40px; height:3px; background:var(--teal-light); border-radius:2px; margin:1.2rem auto 0; }
+
+  /* PROGRESS */
+  .progress-bar-wrap { background:var(--teal-mid); height:4px; }
+  .progress-bar { height:100%; background:var(--teal-soft); width:0%; transition:width 0.4s ease; }
+
+  /* MAIN */
+  .main { max-width:680px; margin:0 auto; padding:2rem 1.25rem 4rem; }
+
+  /* SECTION CARD */
+  .section-card { background:var(--white); border-radius:var(--radius); border:1px solid var(--border); padding:1.75rem 1.5rem; margin-bottom:1.25rem; }
+  .section-title { display:flex; align-items:center; gap:10px; margin-bottom:1.5rem; }
+  .section-num { width:28px; height:28px; border-radius:50%; background:var(--teal-dark); color:#fff; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .section-title h2 { font-size:15px; font-weight:600; color:var(--teal-dark); letter-spacing:.02em; }
+  .section-intro { font-size:13.5px; color:var(--text-muted); line-height:1.7; margin-bottom:1.5rem; background:var(--bg); border-radius:var(--radius-sm); padding:.9rem 1rem; border-left:3px solid var(--teal-light); }
+
+  /* FIELD */
+  .field { margin-bottom:1.4rem; }
+  .field:last-child { margin-bottom:0; }
+  .field label { display:block; font-size:14px; font-weight:500; color:var(--text); margin-bottom:.5rem; }
+  .field label span.req { color:var(--error); margin-left:2px; }
+  .hint { font-size:12px; color:var(--text-light); margin-top:4px; }
+
+  /* INPUTS */
+  input[type="number"], select { width:100%; height:44px; border:1px solid var(--border); border-radius:var(--radius-sm); padding:0 14px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--text); background:#fff; outline:none; transition:border-color .2s; appearance:none; -webkit-appearance:none; }
+  input[type="number"]:focus, select:focus { border-color:var(--teal-light); box-shadow:0 0 0 3px rgba(29,158,117,.12); }
+  .select-wrap { position:relative; }
+  .select-wrap::after { content:''; position:absolute; right:14px; top:50%; transform:translateY(-50%); width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent; border-top:6px solid var(--text-muted); pointer-events:none; }
+
+  /* RADIO PILLS */
+  .radio-group { display:flex; flex-wrap:wrap; gap:10px; }
+  .radio-option { display:none; }
+  .radio-label { display:inline-flex; align-items:center; gap:7px; padding:9px 18px; border:1.5px solid var(--border); border-radius:30px; cursor:pointer; font-size:14px; color:var(--text-muted); font-weight:500; transition:all .2s; user-select:none; }
+  .radio-option:checked + .radio-label { background:var(--teal-pale); border-color:var(--teal-light); color:var(--teal-dark); }
+  .radio-label::before { content:''; width:14px; height:14px; border-radius:50%; border:2px solid var(--border); transition:all .2s; flex-shrink:0; }
+  .radio-option:checked + .radio-label::before { background:var(--teal-light); border-color:var(--teal-light); box-shadow:inset 0 0 0 3px #fff; }
+
+  /* EPS QUESTION */
+  .eps-question { margin-bottom:1.6rem; padding-bottom:1.6rem; border-bottom:1px solid #edf5f1; }
+  .eps-question:last-child { margin-bottom:0; padding-bottom:0; border-bottom:none; }
+  .eps-q-num { font-size:11px; font-weight:600; color:var(--teal-light); letter-spacing:.08em; text-transform:uppercase; margin-bottom:.35rem; }
+  .eps-q-text { font-size:14.5px; color:var(--text); line-height:1.6; margin-bottom:1rem; }
+  .eps-q-tag { font-size:11px; color:var(--text-light); font-style:italic; }
+
+  /* SCALE BUTTONS */
+  .scale-options { display:flex; gap:6px; flex-wrap:wrap; }
+  .scale-input { display:none; }
+  .scale-btn-label { flex:1; min-width:72px; text-align:center; padding:9px 6px; border:1.5px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; transition:all .15s; user-select:none; }
+  .scale-btn-label .scale-val { display:block; font-size:16px; font-weight:700; color:var(--text-muted); line-height:1.2; }
+  .scale-btn-label .scale-txt { display:block; font-size:10.5px; color:var(--text-light); margin-top:2px; line-height:1.3; }
+  .scale-btn-label:hover { border-color:var(--teal-light); background:var(--teal-pale); }
+  .scale-btn-label:hover .scale-val { color:var(--teal-dark); }
+  .scale-input:checked + .scale-btn-label { background:var(--teal-dark); border-color:var(--teal-dark); }
+  .scale-input:checked + .scale-btn-label .scale-val { color:#fff; }
+  .scale-input:checked + .scale-btn-label .scale-txt { color:rgba(255,255,255,.7); }
+
+  /* VALIDATION */
+  .field-error, .eps-error { font-size:12px; color:var(--error); margin-top:4px; display:none; }
+  .field.has-error input, .field.has-error select { border-color:var(--error); }
+  .field.has-error .field-error { display:block; }
+  .eps-question.has-error .scale-options { outline:2px solid var(--error); border-radius:var(--radius-sm); }
+  .eps-question.has-error .eps-error { display:block; }
+
+  /* SUBMIT */
+  .submit-btn { width:100%; height:52px; background:var(--teal-dark); color:#fff; border:none; border-radius:var(--radius); font-family:'DM Sans',sans-serif; font-size:16px; font-weight:600; cursor:pointer; transition:background .2s, transform .1s; letter-spacing:.02em; margin-top:.5rem; }
+  .submit-btn:hover { background:var(--teal-mid); }
+  .submit-btn:active { transform:scale(.99); }
+  .disclaimer { font-size:12px; color:var(--text-light); text-align:center; margin-top:.75rem; line-height:1.6; }
+
+  /* RESULT CARD */
+  .result-card { display:none; background:var(--white); border-radius:var(--radius); border:1px solid var(--border); padding:2rem 1.5rem; margin-bottom:1.25rem; text-align:center; }
+  .result-card.visible { display:block; }
+  .result-score { font-family:'DM Serif Display',serif; font-size:4rem; color:var(--teal-dark); line-height:1; }
+  .result-max { font-size:14px; color:var(--text-light); margin-bottom:1.25rem; }
+  .result-label { display:inline-block; padding:6px 18px; border-radius:20px; font-size:13px; font-weight:600; margin-bottom:1rem; }
+  .result-label.baixo  { background:#e6f5ee; color:#0a4a3a; }
+  .result-label.moderado { background:#fff4e0; color:#7a4800; }
+  .result-label.alto   { background:#fdecea; color:#8b1c1c; }
+  .result-desc { font-size:13.5px; color:var(--text-muted); line-height:1.7; max-width:460px; margin:0 auto 1.25rem; }
+  .result-norm { font-size:12px; color:var(--text-light); background:var(--bg); border-radius:var(--radius-sm); padding:.75rem 1rem; text-align:left; line-height:1.7; }
+  .result-norm strong { color:var(--teal-dark); }
+
+  /* THANK YOU */
+  .thank-you { display:none; text-align:center; padding:3rem 1.5rem; background:var(--white); border-radius:var(--radius); border:1px solid var(--border); }
+  .thank-you.visible { display:block; }
+  .ty-icon { width:64px; height:64px; background:var(--teal-pale); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; }
+  .ty-icon svg { width:30px; height:30px; stroke:var(--teal-mid); fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+  .thank-you h2 { font-family:'DM Serif Display',serif; font-size:1.6rem; color:var(--teal-dark); margin-bottom:.75rem; }
+  .thank-you p { font-size:14px; color:var(--text-muted); line-height:1.7; max-width:400px; margin:0 auto; }
+
+  /* QR */
+  .qr-section { background:var(--teal-dark); padding:2.5rem 1.5rem; text-align:center; }
+  .qr-section h3 { font-family:'DM Serif Display',serif; color:#fff; font-size:1.2rem; margin-bottom:.4rem; }
+  .qr-section p { color:rgba(255,255,255,.6); font-size:13px; margin-bottom:1.5rem; }
+  .qr-input-wrap { display:flex; gap:8px; max-width:500px; margin:0 auto 1.5rem; }
+  .qr-input { flex:1; height:44px; border:1.5px solid rgba(255,255,255,.2); border-radius:var(--radius-sm); background:rgba(255,255,255,.08); color:#fff; font-family:'DM Sans',sans-serif; font-size:14px; padding:0 14px; outline:none; }
+  .qr-input::placeholder { color:rgba(255,255,255,.35); }
+  .qr-input:focus { border-color:var(--teal-soft); }
+  .qr-gen-btn { height:44px; padding:0 18px; background:var(--teal-light); color:#fff; border:none; border-radius:var(--radius-sm); font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; transition:background .2s; }
+  .qr-gen-btn:hover { background:#25b884; }
+  #qr-canvas { background:#fff; padding:16px; border-radius:var(--radius); display:none; }
+  #qr-url-display { font-size:12px; color:rgba(255,255,255,.5); word-break:break-all; max-width:320px; display:none; margin-top:10px; }
+  .qr-note { font-size:11px; color:rgba(255,255,255,.4); margin-top:1rem; line-height:1.6; }
+
+  @media(max-width:480px){
+    .hero { padding:2rem 1.25rem; }
+    .section-card { padding:1.25rem 1rem; }
+    .scale-options { gap:4px; }
+    .scale-btn-label { min-width:56px; padding:8px 4px; }
+    .scale-btn-label .scale-val { font-size:14px; }
+    .scale-btn-label .scale-txt { font-size:9.5px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">Pesquisa TCC · Medicina · Maceió</div>
+  <h1>Estresse Percebido em Alunos de um Curso de Medicina em Maceió</h1>
+  <p>Escala de Percepção de Estresse (EPS-10). Suas respostas são anônimas e utilizadas exclusivamente para fins científicos.</p>
+  <div class="hero-divider"></div>
+</div>
+
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="main">
+  <form id="pesquisaForm" novalidate>
+
+    <!-- SEÇÃO 1 -->
+    <div class="section-card">
+      <div class="section-title">
+        <div class="section-num">1</div>
+        <h2>Dados de identificação</h2>
+      </div>
+
+      <div class="field" id="field-idade">
+        <label for="idade">Idade <span class="req">*</span></label>
+        <input type="number" id="idade" name="idade" min="17" max="60" placeholder="Ex: 22" required />
+        <div class="hint">Informe sua idade em anos completos.</div>
+        <div class="field-error">Por favor, informe uma idade válida (entre 17 e 60 anos).</div>
+      </div>
+
+      <div class="field" id="field-sexo">
+        <label>Sexo <span class="req">*</span></label>
+        <div class="radio-group">
+          <input type="radio" class="radio-option" name="sexo" id="sexo-m" value="Masculino" required>
+          <label class="radio-label" for="sexo-m">Masculino</label>
+          <input type="radio" class="radio-option" name="sexo" id="sexo-f" value="Feminino">
+          <label class="radio-label" for="sexo-f">Feminino</label>
+          <input type="radio" class="radio-option" name="sexo" id="sexo-outro" value="Prefiro não informar">
+          <label class="radio-label" for="sexo-outro">Prefiro não informar</label>
+        </div>
+        <div class="field-error" id="sexo-error">Por favor, selecione uma opção.</div>
+      </div>
+
+      <div class="field" id="field-periodo">
+        <label for="periodo">Período / Semestre <span class="req">*</span></label>
+        <div class="select-wrap">
+          <select id="periodo" name="periodo" required>
+            <option value="" disabled selected>Selecione seu período atual</option>
+            <option value="1">1º Período</option>
+            <option value="2">2º Período</option>
+            <option value="3">3º Período</option>
+            <option value="4">4º Período</option>
+            <option value="5">5º Período</option>
+            <option value="6">6º Período</option>
+            <option value="7">7º Período</option>
+            <option value="8">8º Período</option>
+            <option value="9">9º Período</option>
+            <option value="10">10º Período</option>
+            <option value="11">11º Período</option>
+            <option value="12">12º Período</option>
+          </select>
+        </div>
+        <div class="field-error">Por favor, selecione seu período.</div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 2: EPS-10 -->
+    <div class="section-card">
+      <div class="section-title">
+        <div class="section-num">2</div>
+        <h2>Escala de Percepção de Estresse (EPS-10)</h2>
+      </div>
+      <div class="section-intro">
+        As questões abaixo perguntam a respeito dos seus <strong>sentimentos e pensamentos durante os últimos 30 dias</strong>. Em cada questão, indique com que freqüência você se sentiu ou pensou a respeito da situação descrita.
+      </div>
+
+      <!-- Q1 -->
+      <div class="eps-question" id="eq-1">
+        <div class="eps-q-num">Questão 1</div>
+        <div class="eps-q-text">Com que freqüência você ficou aborrecido por causa de algo que aconteceu inesperadamente? <span class="eps-q-tag">(considere os últimos 30 dias)</span></div>
+        <div class="scale-options">
+          <input type="radio" class="scale-input" name="q1" id="q1-0" value="0"><label class="scale-btn-label" for="q1-0"><span class="scale-val">0</span><span class="scale-txt">Nunca</span></label>
+          <input type="radio" class="scale-input" name="q1" id="q1-1" value="1"><label class="scale-btn-label" for="q1-1"><span class="scale-val">1</span><span class="scale-txt">Quase Nunca</span></label>
+          <input type="radio" class="scale-input" name="q1" id="q1-2" value="2"><label class="scale-btn-label" for="q1-2"><span class="scale-val">2</span><span class="scale-txt">Às Vezes</span></label>
+          <input type="radio" class="scale-input" name="q1" id="q1-3" value="3"><label class="scale-btn-label" for="q1-3"><span class="scale-val">3</span><span class="scale-txt">Pouco Freq.</span></label>
+          <input type="radio" class="scale-input" name="q1" id="q1-4" value="4"><label class="scale-btn-label" for="q1-4"><span class="scale-val">4</span><span class="scale-txt">Muito Freq.</span></label>
+        </div>
+        <div class="eps-error">Por favor, selecione uma resposta.</div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="eps-question" id="eq-2">
+        <div class="eps-q-num">Questão 2</div>
+        <div class="eps-q-text">Com que freqüência você sentiu que foi incapaz de controlar coisas importantes na sua vida? <span class="eps-q-tag">(considere os últimos 30 dias)</span></div>
+        <div class="scale-options">
+          <input type="radio" class="scale-input" name="q2" id="q2-0" value="0"><label class="scale-btn-label" for="q2-0"><span class="scale-val">0</span><span class="scale-txt">Nunca</span></label>
+          <input type="radio" class="scale-input" name="q2" id="q2-1" value="1"><label class="scale-btn-label" for="q2-1"><span class="scale-val">1</span><span class="scale-txt">Quase Nunca</span></label>
+          <input type="radio" class="scale-input" name="q2" id="q2-2" value="2"><label class="scale-btn-label" for="q2-2"><span class="scale-val">2</span><span class="scale-txt">Às Vezes</span></label>
+          <input type="radio" class="scale-input" name="q2" id="q2-3" value="3"><label class="scale-btn-label" for="q2-3"><span class="scale-val">3</span><span class="scale-txt">Pouco Freq.</span></label>
+          <input type="radio" class="scale-input" name="q2" id="q2-4" value="4"><label class="scale-btn-label" for="q2-4"><span class="scale-val">4</span><span class="scale-txt">Muito Freq.</span></label>
+        </div>
+        <div class="eps-error">Por favor, selecione uma resposta.</div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="eps-question" id="eq-3">
+        <div class="eps-q-num">Questão 3</div>
+        <div class="eps-q-text">Com que freqüência você esteve nervoso ou estressado? <span class="eps-q-tag">(considere os últimos 30 dias)</span></div>
+        <div class="scale-options">
+          <input type="radio" class="scale-input" name="q3" id="q3-0" value="0"><label class="scale-btn-label" for="q3-0"><span class="scale-val">0</span><span class="scale-txt">Nunca</span></label>
+          <input type="radio" class="scale-input" name="q3" id="q3-1" value="1"><label class="scale-btn-label" for="q3-1"><span class="scale-val">1</span><span class="scale-txt">Quase Nunca</span></label>
+          <input type="radio" class="scale-input" name="q3" id="q3-2" value="2"><label class="scale-btn-label" for="q3-2"><span class="scale-val">2</span><span class="scale-txt">Às Vezes</span></label>
+          <input type="radio" class="scale-input" name="q3" id="q3-3" value="3"><label class="scale-btn-label" for="q3-3"><span class="scale-val">3</span><span class="scale-txt">Pouco Freq.</span></label>
+          <input type="radio" class="scale-input" name="q3" id="q3-4" value="4"><label class="scale-btn-label" for="q3-4"><span class="scale-val">4</span><span class="scale-txt">Muito Freq.</span></label>
+        </div>
+        <div class="eps-error">Por favor, selecione uma resposta.</div>
+      </div>
+
+      <!-- Q4 (positiva — revertida) -->
+      <div class="eps-question" id="eq-4">
+        <div class="eps-q-num">Questão 4</div>
+        <div class="eps-q-text">Com que freqüência você esteve confiante em sua capacidade de lidar com seus problemas pessoais? <span class="eps-q-tag">(considere os últimos 30 dias)</span></div>
+        <div class="scale-options">
+          <input type="radio" class="scale-input" name="q4" id="q4-0" value="0"><label class="scale-btn-label" for="q4-0"><span class="scale-val">0</span><span class="scale-txt">Nunca</span></label>
+          <input type="radio" class="scale-input" name="q4" id="q4-1" value="1"><label class="scale-btn-label" for="q4-1"><span class="scale-val">1</span><span class="scale-txt">Quase Nunca</span></label>
+          <input type="radio" class="scale-input" name="q4" id="q4-2" value="2"><label class="scale-btn-label" for="q4-2"><span class="scale-val">2</span><span class="scale-txt">Às Vezes</span></label>
+          <input type="radio" class="scale-input" name="q4" id="q4-3" value="3"><label class="scale-btn-label" for="q4-3"><span class="scale-val">3</span><span class="scale-txt">Pouco Freq.</span></label>
+          <input type="radio" class="scale-input" name="q4" id="q4-4" value="4"><label class="scale-btn-label" for="q4-4"><span class="scale-val">4</span><span class="scale-txt">Muito Freq.</span></label>
+        </div>
+        <div class="eps-error">Por favor, selecione uma resposta.</div>
+      </div>
+
+      <!-- Q5 (positiva — revertida) -->
+      <div class="eps-question" id="eq-5">
+        <div class="eps-q-num">Questão 5</div>
+        <div class="eps-q-text">Com que freqüência você sentiu que as coisas aconteceram da maneira que você esperava? <span class="eps-q-tag">(considere os últimos 30 dias)</span></div>
+        <div class="scale-options">
+          <input type="radio" class="scale-input" name="q5" id="q5-0" value="0"><label class="scale-btn-label" for="q5-0"><span class="scale-val">0</span><span class="scale-txt">Nunca</span></label>
+          <input type="radio" class="scale-input" name="q5" id="q5-1" value="1"><label class="scale-btn-label" for="q5-1"><span class="scale-val">1</span><span class="scale-txt">Quase Nunca</span></label>
+          <input type="radio" class="scale-input" name="q5" id="q5-2" value="2"><label class="scale-btn-label" for="q5-2"><span class="scale-val">2</span><span class="scale-txt">Às Vezes</span></label>
+          <input type="radio" class="scale-input" name="q5" id="q5-3" value="3"><label class="scale-btn-label" for="q5-3"><span class="scale-val">3</span><span class="scale-txt">Pouco Freq.</span></label>
+          <input type="radio" class="scale-input" name="q5" id="q5-4" value="4"><label class="scale-btn-label" for="q5-4"><span class="scale-val">4</span><span class="scale-txt">Muito Freq.</span></label>
+        </div>
+        <div class="eps-error">Por favor, selecione uma resposta.</div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="eps-question" id="eq-6">
+        <div class="eps-q-num">Questão 6</div>
+        <div class="eps-q-text">Com que freqüência você achou que não conseguiria lidar com todas as coisas que tinha por fazer? <span class="eps-q-tag">(considere os últimos 30 dias)</span></div>
+        <div class="scale-options">
+          <input type="radio" class="scale-input" name="q6" id="q6-0" value="0"><label class="scale-btn-label" for="q6-0"><span class="scale-val">0</span><span class="scale-txt">Nunca</span></label>
+          <input type="radio" class="scale-input" name="q6" id="q6-1" value="1"><label class="scale-btn-label" for="q6-1"><span class="scale-val">1</span><span class="scale-txt">Quase Nunca</span></label>
+          <input type="radio" class="scale-input" name="q6" id="q6-2" value="2"><label class="scale-btn-label" for="q6-2"><span class="scale-val">2</span><span class="scale-txt">Às Vezes</span></label>
+          <input type="radio" class="scale-input" name="q6" id="q6-3" value="3"><label class="scale-btn-label" for="q6-3"><span class="scale-val">3</span><span class="scale-txt">Pouco Freq.</span></label>
+          <input type="radio" class="scale-input" name="q6" id="q6-4" value="4"><label class="scale-btn-label" for="q6-4"><span class="scale-val">4</span><span class="scale-txt">Muito Freq.</span></label>
+        </div>
+        <div class="eps-error">Por favor, selecione uma resposta.</div>
+      </div>
+
+      <!-- Q7 (positiva — revertida) -->
+      <div class="eps-question" id="eq-7">
+        <div class="eps-q-num">Questão 7</div>
+        <div class="eps-q-text">Com que freqüência você foi capaz de controlar irritações na sua vida? <span class="eps-q-tag">(considere os últimos 30 dias)</span></div>
+        <div class="scale-options">
+          <input type="radio" class="scale-input" name="q7" id="q7-0" value="0"><label class="scale-btn-label" for="q7-0"><span class="scale-val">0</span><span class="scale-txt">Nunca</span></label>
+          <input type="radio" class="scale-input" name="q7" id="q7-1" value="1"><label class="scale-btn-label" for="q7-1"><span class="scale-val">1</span><span class="scale-txt">Quase Nunca</span></label>
+          <input type="radio" class="scale-input" name="q7" id="q7-2" value="2"><label class="scale-btn-label" for="q7-2"><span class="scale-val">2</span><span class="scale-txt">Às Vezes</span></label>
+          <input type="radio" class="scale-input" name="q7" id="q7-3" value="3"><label class="scale-btn-label" for="q7-3"><span class="scale-val">3</span><span class="scale-txt">Pouco Freq.</span></label>
+          <input type="radio" class="scale-input" name="q7" id="q7-4" value="4"><label class="scale-btn-label" for="q7-4"><span class="scale-val">4</span><span class="scale-txt">Muito Freq.</span></label>
+        </div>
+        <div class="eps-error">Por favor, selecione uma resposta.</div>
+      </div>
+
+      <!-- Q8 (positiva — revertida) -->
+      <div class="eps-question" id="eq-8">
+        <div class="eps-q-num">Questão 8</div>
+        <div class="eps-q-text">Com que freqüência você sentiu que todos os aspectos de sua vida estavam sob controle? <span class="eps-q-tag">(considere os últimos 30 dias)</span></div>
+        <div class="scale-options">
+          <input type="radio" class="scale-input" name="q8" id="q8-0" value="0"><label class="scale-btn-label" for="q8-0"><span class="scale-val">0</span><span class="scale-txt">Nunca</span></label>
+          <input type="radio" class="scale-input" name="q8" id="q8-1" value="1"><label class="scale-btn-label" for="q8-1"><span class="scale-val">1</span><span class="scale-txt">Quase Nunca</span></label>
+          <input type="radio" class="scale-input" name="q8" id="q8-2" value="2"><label class="scale-btn-label" for="q8-2"><span class="scale-val">2</span><span class="scale-txt">Às Vezes</span></label>
+          <input type="radio" class="scale-input" name="q8" id="q8-3" value="3"><label class="scale-btn-label" for="q8-3"><span class="scale-val">3</span><span class="scale-txt">Pouco Freq.</span></label>
+          <input type="radio" class="scale-input" name="q8" id="q8-4" value="4"><label class="scale-btn-label" for="q8-4"><span class="scale-val">4</span><span class="scale-txt">Muito Freq.</span></label>
+        </div>
+        <div class="eps-error">Por favor, selecione uma resposta.</div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="eps-question" id="eq-9">
+        <div class="eps-q-num">Questão 9</div>
+        <div class="eps-q-text">Com que freqüência você esteve bravo por causa de coisas que estiveram fora de seu controle? <span class="eps-q-tag">(considere os últimos 30 dias)</span></div>
+        <div class="scale-options">
+          <input type="radio" class="scale-input" name="q9" id="q9-0" value="0"><label class="scale-btn-label" for="q9-0"><span class="scale-val">0</span><span class="scale-txt">Nunca</span></label>
+          <input type="radio" class="scale-input" name="q9" id="q9-1" value="1"><label class="scale-btn-label" for="q9-1"><span class="scale-val">1</span><span class="scale-txt">Quase Nunca</span></label>
+          <input type="radio" class="scale-input" name="q9" id="q9-2" value="2"><label class="scale-btn-label" for="q9-2"><span class="scale-val">2</span><span class="scale-txt">Às Vezes</span></label>
+          <input type="radio" class="scale-input" name="q9" id="q9-3" value="3"><label class="scale-btn-label" for="q9-3"><span class="scale-val">3</span><span class="scale-txt">Pouco Freq.</span></label>
+          <input type="radio" class="scale-input" name="q9" id="q9-4" value="4"><label class="scale-btn-label" for="q9-4"><span class="scale-val">4</span><span class="scale-txt">Muito Freq.</span></label>
+        </div>
+        <div class="eps-error">Por favor, selecione uma resposta.</div>
+      </div>
+
+      <!-- Q10 -->
+      <div class="eps-question" id="eq-10">
+        <div class="eps-q-num">Questão 10</div>
+        <div class="eps-q-text">Com que freqüência você sentiu que os problemas acumularam tanto que você não conseguiria resolvê-los? <span class="eps-q-tag">(considere os últimos 30 dias)</span></div>
+        <div class="scale-options">
+          <input type="radio" class="scale-input" name="q10" id="q10-0" value="0"><label class="scale-btn-label" for="q10-0"><span class="scale-val">0</span><span class="scale-txt">Nunca</span></label>
+          <input type="radio" class="scale-input" name="q10" id="q10-1" value="1"><label class="scale-btn-label" for="q10-1"><span class="scale-val">1</span><span class="scale-txt">Quase Nunca</span></label>
+          <input type="radio" class="scale-input" name="q10" id="q10-2" value="2"><label class="scale-btn-label" for="q10-2"><span class="scale-val">2</span><span class="scale-txt">Às Vezes</span></label>
+          <input type="radio" class="scale-input" name="q10" id="q10-3" value="3"><label class="scale-btn-label" for="q10-3"><span class="scale-val">3</span><span class="scale-txt">Pouco Freq.</span></label>
+          <input type="radio" class="scale-input" name="q10" id="q10-4" value="4"><label class="scale-btn-label" for="q10-4"><span class="scale-val">4</span><span class="scale-txt">Muito Freq.</span></label>
+        </div>
+        <div class="eps-error">Por favor, selecione uma resposta.</div>
+      </div>
+
+    </div>
+    <!-- FIM SEÇÃO 2 -->
+
+    <button type="submit" class="submit-btn">Enviar respostas →</button>
+    <p class="disclaimer">Ao enviar, você confirma que participou voluntariamente desta pesquisa. Todas as informações são anônimas e confidenciais.</p>
+  </form>
+
+  <!-- RESULTADO -->
+  <div class="result-card" id="resultCard">
+    <p style="font-size:13px;color:var(--text-light);margin-bottom:.5rem;">Sua pontuação EPS-10</p>
+    <div class="result-score" id="resultScore">—</div>
+    <div class="result-max">de 40 pontos</div>
+    <div class="result-label" id="resultLabel"></div>
+    <p class="result-desc" id="resultDesc"></p>
+    <div class="result-norm" id="resultNorm"></div>
+  </div>
+
+  <!-- THANK YOU -->
+  <div class="thank-you" id="thankYou">
+    <div class="ty-icon">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2>Obrigado pela participação!</h2>
+    <p>Suas respostas foram registradas. Você contribuiu para uma pesquisa sobre saúde mental no curso de Medicina em Maceió.</p>
+  </div>
+</div>
+
+<!-- QR CODE -->
+<div class="qr-section">
+  <h3>Gere o QR Code do questionário</h3>
+  <p>Cole abaixo o link onde este formulário estará hospedado (ex: GitHub Pages, Netlify, Google Sites)</p>
+  <div class="qr-input-wrap">
+    <input type="text" class="qr-input" id="qrUrlInput" placeholder="https://seu-link-aqui.com/questionario" />
+    <button type="button" class="qr-gen-btn" onclick="gerarQR()">Gerar QR</button>
+  </div>
+  <div id="qr-output" style="display:inline-flex;flex-direction:column;align-items:center;">
+    <div id="qr-canvas"></div>
+    <div id="qr-url-display"></div>
+  </div>
+  <p class="qr-note">O QR Code direciona os participantes diretamente para este questionário.<br>Você pode imprimir ou exibir em slides de apresentação.</p>
+</div>
+
+<script>
+  // PROGRESS
+  const totalFields = 13; // 3 demog + 10 eps
+  function updateProgress() {
+    let filled = 0;
+    const idade = parseInt(document.getElementById('idade').value);
+    if (idade >= 17 && idade <= 60) filled++;
+    if (document.querySelector('input[name="sexo"]:checked')) filled++;
+    if (document.getElementById('periodo').value) filled++;
+    for (let i = 1; i <= 10; i++) {
+      if (document.querySelector('input[name="q'+i+'"]:checked')) filled++;
+    }
+    document.getElementById('progressBar').style.width = Math.round((filled / totalFields) * 100) + '%';
+  }
+  document.getElementById('idade').addEventListener('input', updateProgress);
+  document.querySelectorAll('input[name="sexo"]').forEach(r => r.addEventListener('change', updateProgress));
+  document.getElementById('periodo').addEventListener('change', updateProgress);
+  for (let i = 1; i <= 10; i++) {
+    document.querySelectorAll('input[name="q'+i+'"]').forEach(r => r.addEventListener('change', updateProgress));
+  }
+
+  // VALIDATION
+  function validateForm() {
+    let valid = true;
+    // idade
+    const idadeField = document.getElementById('field-idade');
+    const idadeVal = parseInt(document.getElementById('idade').value);
+    if (!idadeVal || idadeVal < 17 || idadeVal > 60) { idadeField.classList.add('has-error'); valid = false; }
+    else idadeField.classList.remove('has-error');
+    // sexo
+    const sexoField = document.getElementById('field-sexo');
+    if (!document.querySelector('input[name="sexo"]:checked')) {
+      sexoField.classList.add('has-error'); document.getElementById('sexo-error').style.display = 'block'; valid = false;
+    } else { sexoField.classList.remove('has-error'); document.getElementById('sexo-error').style.display = 'none'; }
+    // periodo
+    const periodoField = document.getElementById('field-periodo');
+    if (!document.getElementById('periodo').value) { periodoField.classList.add('has-error'); valid = false; }
+    else periodoField.classList.remove('has-error');
+    // eps questions
+    for (let i = 1; i <= 10; i++) {
+      const qDiv = document.getElementById('eq-'+i);
+      if (!document.querySelector('input[name="q'+i+'"]:checked')) {
+        qDiv.classList.add('has-error'); valid = false;
+      } else qDiv.classList.remove('has-error');
+    }
+    return valid;
+  }
+
+  // SCORE COMPUTATION
+  // Items 4,5,7,8 are positive → reversed: 0→4,1→3,2→2,3→1,4→0
+  const positiveItems = [4, 5, 7, 8];
+  function computeScore() {
+    let total = 0;
+    for (let i = 1; i <= 10; i++) {
+      let val = parseInt(document.querySelector('input[name="q'+i+'"]:checked').value);
+      if (positiveItems.includes(i)) val = 4 - val;
+      total += val;
+    }
+    return total;
+  }
+
+  function getResultInfo(score, sexo, idade) {
+    let level, label, desc;
+    if (score <= 13) { level = 'baixo'; label = 'Estresse baixo'; desc = 'Sua pontuação indica um nível baixo de estresse percebido nos últimos 30 dias. Você tem demonstrado boa capacidade de lidar com as demandas do cotidiano.'; }
+    else if (score <= 26) { level = 'moderado'; label = 'Estresse moderado'; desc = 'Sua pontuação indica um nível moderado de estresse percebido. É comum entre estudantes de medicina, mas vale atenção ao equilíbrio entre estudo e autocuidado.'; }
+    else { level = 'alto'; label = 'Estresse alto'; desc = 'Sua pontuação indica um nível elevado de estresse percebido. Considere buscar apoio psicológico ou estratégias de manejo de estresse junto à sua instituição de ensino.'; }
+
+    // Normative comparison
+    const sexoStr = sexo === 'Masculino' ? 'masculino' : (sexo === 'Feminino' ? 'feminino' : null);
+    let normLines = '<strong>Dados normativos para comparação (Cohen, 1984):</strong><br>';
+    if (sexoStr === 'masculino') normLines += '• Média masculina (EUA): 12,1 ± 5,9<br>';
+    if (sexoStr === 'feminino')  normLines += '• Média feminina (EUA): 13,7 ± 6,6<br>';
+    if (idade >= 18 && idade <= 29) normLines += '• Média faixa 18–29 anos (EUA): 14,2 ± 6,2<br>';
+    else if (idade >= 30 && idade <= 44) normLines += '• Média faixa 30–44 anos (EUA): 13,0 ± 6,2<br>';
+    normLines += '<br><strong>Professores do Sul do Brasil (Reis & Petroski, 2004):</strong><br>';
+    if (sexoStr === 'masculino') normLines += '• Média masculina: 16,3 ± 0,6<br>';
+    if (sexoStr === 'feminino')  normLines += '• Média feminina: 18,3 ± 0,3<br>';
+    normLines += '<br><em>Nota: Estes dados normativos são de referência. Os resultados não constituem diagnóstico clínico.</em>';
+
+    return { level, label, desc, normLines };
+  }
+
+  // SUBMIT
+  document.getElementById('pesquisaForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!validateForm()) {
+      const firstError = document.querySelector('.has-error');
+      if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    const score = computeScore();
+    const sexo  = document.querySelector('input[name="sexo"]:checked').value;
+    const idade = parseInt(document.getElementById('idade').value);
+    const { level, label, desc, normLines } = getResultInfo(score, sexo, idade);
+
+    document.getElementById('resultScore').textContent = score;
+    const lbl = document.getElementById('resultLabel');
+    lbl.textContent = label;
+    lbl.className = 'result-label ' + level;
+    document.getElementById('resultDesc').textContent = desc;
+    document.getElementById('resultNorm').innerHTML = normLines;
+
+    this.style.display = 'none';
+    document.getElementById('resultCard').classList.add('visible');
+    document.getElementById('thankYou').classList.add('visible');
+    document.getElementById('progressBar').style.width = '100%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // QR CODE
+  function gerarQR() {
+    const url = document.getElementById('qrUrlInput').value.trim();
+    if (!url) { alert('Cole o link do questionário antes de gerar o QR Code.'); return; }
+    const canvas = document.getElementById('qr-canvas');
+    canvas.innerHTML = '';
+    new QRCode(canvas, { text: url, width: 200, height: 200, colorDark: '#0a4a3a', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
+    canvas.style.display = 'inline-block';
+    const disp = document.getElementById('qr-url-display');
+    disp.textContent = url; disp.style.display = 'block';
+  }
+  document.getElementById('qrUrlInput').addEventListener('keydown', e => { if (e.key === 'Enter') gerarQR(); });
+</script>
+</body>
+</html>
